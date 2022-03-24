@@ -31,6 +31,8 @@ type MsgClient interface {
 	// This will create a new batch denom with a fixed supply. Issued credits can
 	// be distributed to recipients in either tradable or retired form.
 	CreateBatch(ctx context.Context, in *MsgCreateBatch, opts ...grpc.CallOption) (*MsgCreateBatchResponse, error)
+	// MintBatch issues new token in a given batch respecting the maximum supply.
+	MintBatch(ctx context.Context, in *MsgMintBatch, opts ...grpc.CallOption) (*MsgMintBatchResponse, error)
 	// Send sends tradable credits from one account to another account. Sent
 	// credits can either be tradable or retired on receipt.
 	Send(ctx context.Context, in *MsgSend, opts ...grpc.CallOption) (*MsgSendResponse, error)
@@ -77,6 +79,15 @@ func (c *msgClient) CreateProject(ctx context.Context, in *MsgCreateProject, opt
 func (c *msgClient) CreateBatch(ctx context.Context, in *MsgCreateBatch, opts ...grpc.CallOption) (*MsgCreateBatchResponse, error) {
 	out := new(MsgCreateBatchResponse)
 	err := c.cc.Invoke(ctx, "/regen.ecocredit.v1.Msg/CreateBatch", in, out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+func (c *msgClient) MintBatch(ctx context.Context, in *MsgMintBatch, opts ...grpc.CallOption) (*MsgMintBatchResponse, error) {
+	out := new(MsgMintBatchResponse)
+	err := c.cc.Invoke(ctx, "/regen.ecocredit.v1.Msg/MintBatch", in, out, opts...)
 	if err != nil {
 		return nil, err
 	}
@@ -150,6 +161,8 @@ type MsgServer interface {
 	// This will create a new batch denom with a fixed supply. Issued credits can
 	// be distributed to recipients in either tradable or retired form.
 	CreateBatch(context.Context, *MsgCreateBatch) (*MsgCreateBatchResponse, error)
+	// MintBatch issues new token in a given batch respecting the maximum supply.
+	MintBatch(context.Context, *MsgMintBatch) (*MsgMintBatchResponse, error)
 	// Send sends tradable credits from one account to another account. Sent
 	// credits can either be tradable or retired on receipt.
 	Send(context.Context, *MsgSend) (*MsgSendResponse, error)
@@ -180,6 +193,9 @@ func (UnimplementedMsgServer) CreateProject(context.Context, *MsgCreateProject) 
 }
 func (UnimplementedMsgServer) CreateBatch(context.Context, *MsgCreateBatch) (*MsgCreateBatchResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method CreateBatch not implemented")
+}
+func (UnimplementedMsgServer) MintBatch(context.Context, *MsgMintBatch) (*MsgMintBatchResponse, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method MintBatch not implemented")
 }
 func (UnimplementedMsgServer) Send(context.Context, *MsgSend) (*MsgSendResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method Send not implemented")
@@ -262,6 +278,24 @@ func _Msg_CreateBatch_Handler(srv interface{}, ctx context.Context, dec func(int
 	}
 	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
 		return srv.(MsgServer).CreateBatch(ctx, req.(*MsgCreateBatch))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
+func _Msg_MintBatch_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(MsgMintBatch)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(MsgServer).MintBatch(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: "/regen.ecocredit.v1.Msg/MintBatch",
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(MsgServer).MintBatch(ctx, req.(*MsgMintBatch))
 	}
 	return interceptor(ctx, in, info, handler)
 }
@@ -392,6 +426,10 @@ var Msg_ServiceDesc = grpc.ServiceDesc{
 		{
 			MethodName: "CreateBatch",
 			Handler:    _Msg_CreateBatch_Handler,
+		},
+		{
+			MethodName: "MintBatch",
+			Handler:    _Msg_MintBatch_Handler,
 		},
 		{
 			MethodName: "Send",

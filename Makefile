@@ -326,7 +326,7 @@ devdoc-update:
 ###                                Protobuf                                 ###
 ###############################################################################
 
-containerProtoVer=v0.4
+containerProtoVer=v0.3
 containerProtoImage=tendermintdev/sdk-proto-gen:$(containerProtoVer)
 containerProtoGen=${PROJECT_NAME}-proto-gen-$(containerProtoVer)
 containerProtoFmt=${PROJECT_NAME}-proto-fmt-$(containerProtoVer)
