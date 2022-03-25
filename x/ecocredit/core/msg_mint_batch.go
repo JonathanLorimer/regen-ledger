@@ -1,14 +1,10 @@
 package core
 
 import (
-	"fmt"
-
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	sdkerrors "github.com/cosmos/cosmos-sdk/types/errors"
 	"github.com/cosmos/cosmos-sdk/x/auth/legacy/legacytx"
-	"golang.org/x/mod/sumdb/note"
 
-	"github.com/regen-network/regen-ledger/types/math"
 	"github.com/regen-network/regen-ledger/types/structvalid"
 	"github.com/regen-network/regen-ledger/x/ecocredit"
 )
@@ -32,6 +28,12 @@ func (m MsgMintBatch) GetSignBytes() []byte {
 	return sdk.MustSortJSON(ecocredit.ModuleCdc.MustMarshalJSON(&m))
 }
 
+// GetSigners implements the sdk.Msk interface
+func (m MsgMintBatch) GetSigners() []sdk.AccAddress {
+	addr, _ := sdk.AccAddressFromBech32(m.Issuer)
+	return []sdk.AccAddress{addr}
+}
+
 // ValidateBasic does a sanity check on the provided data.
 func (m *MsgMintBatch) ValidateBasic() error {
 	if _, err := sdk.AccAddressFromBech32(m.Issuer); err != nil {
@@ -39,6 +41,7 @@ func (m *MsgMintBatch) ValidateBasic() error {
 	}
 	errs := structvalid.AssertStrMaxLen("note", m.Note, 255, nil)
 	errs = structvalid.AssertStrMaxLen("id", m.OriginTx.Id, 255, nil)
+	errs = structvalid.AssertStrMaxLen("id", m.OriginTx.Typ, 255, nil)
 	if err := structvalid.ErrsToError(errs); err != nil {
 		return err
 	}
@@ -49,5 +52,4 @@ func (m *MsgMintBatch) ValidateBasic() error {
 	}
 
 	return nil
-
 }

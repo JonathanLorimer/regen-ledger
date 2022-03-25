@@ -79,7 +79,7 @@ func validateBatchIssuance(bi *BatchIssuance) error {
 			}
 		}
 	}
-
+	return nil
 }
 
 // GetSigners returns the expected signers for MsgCreateBatch.

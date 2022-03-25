@@ -178,7 +178,7 @@ message MsgMintBatch {
   message OriginTx {
     // type of the transaction originating the mint process. Eg: Polygon,
     // Ethereum, Verra,
-    string type = 1;
+    string typ = 1;
     // the id of a transaction based on a type (tx id, serial number)
     string id = 2;
   }
