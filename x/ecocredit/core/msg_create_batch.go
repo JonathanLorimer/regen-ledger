@@ -47,33 +47,39 @@ func (m *MsgCreateBatch) ValidateBasic() error {
 		return err
 	}
 
-	for _, iss := range m.Issuance {
-
-		if _, err := sdk.AccAddressFromBech32(iss.Recipient); err != nil {
-			return sdkerrors.ErrInvalidRequest.Wrap(err.Error())
-		}
-
-		if iss.TradableAmount != "" {
-			if _, err := math.NewNonNegativeDecFromString(iss.TradableAmount); err != nil {
-				return err
-			}
-		}
-
-		if iss.RetiredAmount != "" {
-			retiredAmount, err := math.NewNonNegativeDecFromString(iss.RetiredAmount)
-			if err != nil {
-				return err
-			}
-
-			if !retiredAmount.IsZero() {
-				if err = ValidateLocation(iss.RetirementLocation); err != nil {
-					return err
-				}
-			}
+	for _, bi := range m.Issuance {
+		if err := validateBatchIssuance(bi); err != nil {
+			return err
 		}
 	}
 
 	return nil
+}
+
+func validateBatchIssuance(bi *BatchIssuance) error {
+	if _, err := sdk.AccAddressFromBech32(bi.Recipient); err != nil {
+		return sdkerrors.ErrInvalidRequest.Wrap(err.Error())
+	}
+
+	if bi.TradableAmount != "" {
+		if _, err := math.NewNonNegativeDecFromString(bi.TradableAmount); err != nil {
+			return err
+		}
+	}
+
+	if bi.RetiredAmount != "" {
+		retiredAmount, err := math.NewNonNegativeDecFromString(bi.RetiredAmount)
+		if err != nil {
+			return err
+		}
+
+		if !retiredAmount.IsZero() {
+			if err = ValidateLocation(bi.RetirementLocation); err != nil {
+				return err
+			}
+		}
+	}
+
 }
 
 // GetSigners returns the expected signers for MsgCreateBatch.
