@@ -76,6 +76,10 @@ func (s serverImpl) CreateClass(goCtx context.Context, req *ecocredit.MsgCreateC
 	return &ecocredit.MsgCreateClassResponse{ClassId: classID}, nil
 }
 
+func (s serverImpl) MintBatch(goCtx context.Context, req *ecocredit.MsgMintBatch) (*ecocredit.MsgMintBatchResponse, error) {
+	panic("not implemented")
+}
+
 // CreateProject creates a new project.
 func (s serverImpl) CreateProject(goCtx context.Context, req *ecocredit.MsgCreateProject) (*ecocredit.MsgCreateProjectResponse, error) {
 	ctx := types.UnwrapSDKContext(goCtx)
